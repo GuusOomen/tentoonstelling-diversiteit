@@ -5,132 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>5 MP3 Players</title>
   <style>
-    :root{--bg:#0f172a;--card:#0b1220;--muted:#94a3b8;--accent:#60a5fa}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial}
-    body{background:linear-gradient(180deg,#07101a 0%, #081426 100%);color:#e6eef6;display:flex;align-items:center;justify-content:center;padding:32px}
-    .wrap{width:100%;max-width:980px}
-    h1{font-size:20px;margin:0 0 18px}
-    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-    .player{background:rgba(255,255,255,0.03);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
-    .title-row{display:flex;gap:8px;align-items:center}
-    .title-row input[type=text]{flex:1;background:transparent;border:1px dashed rgba(255,255,255,0.06);padding:8px;border-radius:8px;color:var(--muted);outline:none}
-    .controls{display:flex;gap:8px;align-items:center;margin-top:10px}
-    button{appearance:none;border:0;padding:8px 10px;border-radius:8px;background:rgba(255,255,255,0.04);color:inherit;cursor:pointer}
-    input[type=file]{display:none}
-    .file-label{padding:8px 10px;border-radius:8px;border:1px dashed rgba(255,255,255,0.04);cursor:pointer}
-    .meta{font-size:12px;color:var(--muted);margin-top:8px}
-    audio{width:100%;margin-top:10px}
-    .big-play{font-weight:600;background:linear-gradient(90deg,#2563eb,#60a5fa);color:#04243b}
-    .row{display:flex;gap:8px}
-    .fullwidth{grid-column:span 2}
-    @media (max-width:720px){.grid{grid-template-columns:1fr}.fullwidth{grid-column:span 1}}
+    body { font-family: Arial, sans-serif; background: #10131a; color: #f5f5f5; margin: 0; padding: 20px; }
+    h1 { text-align: center; }
+    .player { background: #1b2130; padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(0,0,0,0.3); }
+    .title { font-size: 18px; margin-bottom: 8px; }
+    audio { width: 100%; outline: none; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>5 MP3 Players — choose an MP3 for each slot and press play</h1>
+  <h1>MP3 Player - Local Files</h1>
 
-    <div class="grid" id="players">
-      <!-- 5 players will be instantiated here -->
-    </div>
-
-    <p style="margin-top:12px;font-size:13px;color:var(--muted)">Tip: You can load local MP3 files from your computer. Each player keeps its own title and playback controls.</p>
+  <div class="player">
+    <div class="title">Track 1 - Song One</div>
+    <audio controls>
+      <source src="track1.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
   </div>
 
-  <script>
-    const container = document.getElementById('players');
+  <div class="player">
+    <div class="title">Track 2 - Song Two</div>
+    <audio controls>
+      <source src="track2.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
 
-    function createPlayer(index){
-      const id = `p${index}`;
-      const el = document.createElement('div');
-      el.className = 'player';
-      el.innerHTML = `
-        <div class="title-row">
-          <input type="text" aria-label="Title ${index}" class="title-input" value="Track ${index}" />
-          <label class="file-label" for="file-${index}">Choose MP3</label>
-          <input id="file-${index}" type="file" accept="audio/mpeg,audio/mp3" />
-        </div>
-        <div class="controls">
-          <button class="play-btn" title="Play/Pause">▶︎</button>
-          <button class="stop-btn" title="Stop">■</button>
-          <button class="rew-btn" title="Rewind 5s">«5s</button>
-          <button class="fwd-btn" title="Forward 5s">5s»</button>
-          <label style="margin-left:auto;font-size:12px;color:var(--muted)">Volume</label>
-          <input type="range" class="vol" min="0" max="1" step="0.01" value="1" style="width:90px" />
-        </div>
-        <div class="meta">No file loaded</div>
-        <audio preload="metadata" controls class="audio" /></audio>
-      `;
+  <div class="player">
+    <div class="title">Track 3 - Song Three</div>
+    <audio controls>
+      <source src="track3.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
 
-      // append
-      container.appendChild(el);
+  <div class="player">
+    <div class="title">Track 4 - Song Four</div>
+    <audio controls>
+      <source src="track4.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
 
-      // wire up
-      const fileInput = el.querySelector(`#file-${index}`);
-      const playBtn = el.querySelector('.play-btn');
-      const stopBtn = el.querySelector('.stop-btn');
-      const rewBtn = el.querySelector('.rew-btn');
-      const fwdBtn = el.querySelector('.fwd-btn');
-      const vol = el.querySelector('.vol');
-      const audio = el.querySelector('.audio');
-      const meta = el.querySelector('.meta');
-      const titleInput = el.querySelector('.title-input');
-
-      // file selection
-      fileInput.addEventListener('change', (e)=>{
-        const file = fileInput.files && fileInput.files[0];
-        if(!file) return;
-        if(!file.type.startsWith('audio')){ meta.textContent = 'Selected file is not audio.'; return; }
-        const url = URL.createObjectURL(file);
-        audio.src = url;
-        audio.load();
-        meta.textContent = `${file.name} — ${Math.round(file.size/1024)} KB`;
-      });
-
-      // play/pause
-      playBtn.addEventListener('click', ()=>{
-        if(!audio.src){ meta.textContent = 'No file loaded.'; return; }
-        if(audio.paused){ audio.play(); playBtn.textContent = '⏸'; playBtn.classList.add('big-play'); }
-        else { audio.pause(); playBtn.textContent = '▶︎'; playBtn.classList.remove('big-play'); }
-      });
-
-      // stop
-      stopBtn.addEventListener('click', ()=>{ audio.pause(); audio.currentTime = 0; playBtn.textContent = '▶︎'; playBtn.classList.remove('big-play'); });
-
-      rewBtn.addEventListener('click', ()=>{ audio.currentTime = Math.max(0, audio.currentTime - 5); });
-      fwdBtn.addEventListener('click', ()=>{ audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 5); });
-
-      vol.addEventListener('input', ()=>{ audio.volume = vol.value; });
-
-      // update play button when user uses native controls
-      audio.addEventListener('play', ()=>{ playBtn.textContent = '⏸'; playBtn.classList.add('big-play'); });
-      audio.addEventListener('pause', ()=>{ playBtn.textContent = '▶︎'; playBtn.classList.remove('big-play'); });
-
-      // clean up blob URLs if user picks another file
-      let lastUrl = null;
-      fileInput.addEventListener('change', ()=>{
-        if(lastUrl) URL.revokeObjectURL(lastUrl);
-        const file = fileInput.files[0];
-        if(file){ lastUrl = audio.src; }
-      });
-
-      // title input updates aria-label and small UI hint
-      titleInput.addEventListener('input', ()=>{ titleInput.setAttribute('aria-label', titleInput.value); });
-
-      return el;
-    }
-
-    // create five players
-    for(let i=1;i<=5;i++) createPlayer(i);
-
-    // Accessibility: allow spacebar on focused play button to toggle
-    document.addEventListener('keydown', (e)=>{
-      if(e.code === 'Space' && document.activeElement && document.activeElement.classList.contains('play-btn')){
-        e.preventDefault(); document.activeElement.click();
-      }
-    });
-
-  </script>
+  <div class="player">
+    <div class="title">Track 5 - Song Five</div>
+    <audio controls>
+      <source src="track5.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
 </body>
 </html>
-
