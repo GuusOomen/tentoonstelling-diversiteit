@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: "Poppins", Arial, sans-serif;
-      background: linear-gradient(180deg, #f4f8ff 0%, #e9f0fb 100%);
+      background: linear-gradient(180deg, #f6f9ff 0%, #e9f1ff 100%);
       color: #1e293b;
       margin: 0;
       padding: 40px 20px;
@@ -41,7 +41,7 @@
 
     .player:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.12);
     }
 
     .cover {
@@ -62,12 +62,11 @@
       margin-bottom: 10px;
     }
 
-    /* Custom audio controls */
     .controls {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 16px;
+      gap: 10px;
       margin-top: 10px;
     }
 
@@ -77,8 +76,8 @@
       color: #fff;
       font-size: 18px;
       border-radius: 50%;
-      width: 46px;
-      height: 46px;
+      width: 44px;
+      height: 44px;
       cursor: pointer;
       transition: background 0.2s ease, transform 0.1s ease;
       display: flex;
@@ -125,11 +124,14 @@
   <div class="container">
 
     <div class="player" data-track="track1.mp3">
-      <img src="cover3.png" alt="Track 1 Cover" class="cover">
+      <img src="cover1.jpg" alt="Track 1 Cover" class="cover">
       <div class="info">
         <div class="title">Track 1 – Song One</div>
         <div class="controls">
+          <button class="btn rewind">«5s</button>
           <button class="btn play">▶</button>
+          <button class="btn replay">⟳</button>
+          <button class="btn forward">5s»</button>
         </div>
         <div class="progress-container">
           <div class="progress"></div>
@@ -138,11 +140,14 @@
     </div>
 
     <div class="player" data-track="track2.mp3">
-      <img src="cover3.png" alt="Track 2 Cover" class="cover">
+      <img src="cover2.jpg" alt="Track 2 Cover" class="cover">
       <div class="info">
         <div class="title">Track 2 – Song Two</div>
         <div class="controls">
+          <button class="btn rewind">«5s</button>
           <button class="btn play">▶</button>
+          <button class="btn replay">⟳</button>
+          <button class="btn forward">5s»</button>
         </div>
         <div class="progress-container">
           <div class="progress"></div>
@@ -151,11 +156,14 @@
     </div>
 
     <div class="player" data-track="track3.mp3">
-      <img src="cover3.png" alt="Track 3 Cover" class="cover">
+      <img src="cover3.jpg" alt="Track 3 Cover" class="cover">
       <div class="info">
         <div class="title">Track 3 – Song Three</div>
         <div class="controls">
+          <button class="btn rewind">«5s</button>
           <button class="btn play">▶</button>
+          <button class="btn replay">⟳</button>
+          <button class="btn forward">5s»</button>
         </div>
         <div class="progress-container">
           <div class="progress"></div>
@@ -164,11 +172,14 @@
     </div>
 
     <div class="player" data-track="track4.mp3">
-      <img src="cover3.png" alt="Track 4 Cover" class="cover">
+      <img src="cover4.jpg" alt="Track 4 Cover" class="cover">
       <div class="info">
         <div class="title">Track 4 – Song Four</div>
         <div class="controls">
+          <button class="btn rewind">«5s</button>
           <button class="btn play">▶</button>
+          <button class="btn replay">⟳</button>
+          <button class="btn forward">5s»</button>
         </div>
         <div class="progress-container">
           <div class="progress"></div>
@@ -177,11 +188,14 @@
     </div>
 
     <div class="player" data-track="track5.mp3">
-      <img src="cover3.png" alt="Track 5 Cover" class="cover">
+      <img src="cover5.jpg" alt="Track 5 Cover" class="cover">
       <div class="info">
         <div class="title">Track 5 – Song Five</div>
         <div class="controls">
+          <button class="btn rewind">«5s</button>
           <button class="btn play">▶</button>
+          <button class="btn replay">⟳</button>
+          <button class="btn forward">5s»</button>
         </div>
         <div class="progress-container">
           <div class="progress"></div>
@@ -200,19 +214,22 @@
     let progressAnimation;
 
     players.forEach(player => {
-      const btn = player.querySelector('.play');
+      const btnPlay = player.querySelector('.play');
+      const btnRewind = player.querySelector('.rewind');
+      const btnForward = player.querySelector('.forward');
+      const btnReplay = player.querySelector('.replay');
       const progress = player.querySelector('.progress');
       const track = player.dataset.track;
 
       const audio = new Audio(track);
       audio.volume = 1; // fixed volume
       audio.addEventListener('ended', () => {
-        btn.textContent = '▶';
+        btnPlay.textContent = '▶';
         progress.style.width = '0%';
       });
 
-      btn.addEventListener('click', () => {
-        // Stop any currently playing audio
+      // Play / Pause
+      btnPlay.addEventListener('click', () => {
         if (currentAudio && currentAudio !== audio) {
           currentAudio.pause();
           if (currentButton) currentButton.textContent = '▶';
@@ -220,17 +237,43 @@
 
         if (audio.paused) {
           audio.play();
-          btn.textContent = '⏸';
+          btnPlay.textContent = '⏸';
           currentAudio = audio;
-          currentButton = btn;
+          currentButton = btnPlay;
           updateProgress(audio, progress);
         } else {
           audio.pause();
-          btn.textContent = '▶';
+          btnPlay.textContent = '▶';
           cancelAnimationFrame(progressAnimation);
         }
       });
 
+      // Replay button
+      btnReplay.addEventListener('click', () => {
+        audio.currentTime = 0;
+        if (!audio.paused) audio.play();
+      });
+
+      // Skip backward 5 seconds
+      btnRewind.addEventListener('click', () => {
+        audio.currentTime = Math.max(0, audio.currentTime - 5);
+      });
+
+      // Skip forward 5 seconds
+      btnForward.addEventListener('click', () => {
+        audio.currentTime = Math.min(audio.duration, audio.currentTime + 5);
+      });
+
+      // Progress bar click seek
+      const container = player.querySelector('.progress-container');
+      container.addEventListener('click', e => {
+        const width = container.clientWidth;
+        const clickX = e.offsetX;
+        const duration = audio.duration;
+        if (duration) audio.currentTime = (clickX / width) * duration;
+      });
+
+      // Update progress bar animation
       function updateProgress(audio, bar) {
         const update = () => {
           const percent = (audio.currentTime / audio.duration) * 100;
@@ -243,4 +286,3 @@
   </script>
 </body>
 </html>
-
